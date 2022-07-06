@@ -247,8 +247,13 @@
                     }
 
                     hours = ("0" + hours).slice(-2);
+                    // console.log(hours)
                     minutes = ("0" + minutes).slice(-2);
+                    // console.log(minutes)
+
                     seconds = ("0" + seconds).slice(-2);
+                    // console.log(seconds)
+
                     //Display:
                     document.getElementById('clock').innerHTML = "Now: " + hours + " : " + minutes + " : " + seconds + " : " + AmPm;
                     var t = setTimeout(realtimeClock, 1000);
@@ -308,7 +313,8 @@
                             lastUpdateTime = new Date().getTime();
                             interval = setInterval(update, 1);
                         }
-                        
+     
+
                         myChart_mm1.destroy();  
                         CreateChart_mm1();
                         myChart_mm2.destroy();
@@ -393,7 +399,9 @@
                                                         y: enc1
                                                     })
                                                 })
-                                            }
+                                            },
+                                            duration:10000,
+                                            refresh: 100
                                         }
                                     },
                                     y: {
@@ -480,7 +488,9 @@
                                                         y: enc2
                                                     })
                                                 })
-                                            }
+                                            },
+                                            duration:10000,
+                                            refresh: 100
                                         }
                                     },
                                     y: {
@@ -570,7 +580,9 @@
                                                         y: enc3
                                                     })
                                                 })
-                                            }
+                                            },
+                                            duration:10000,
+                                            refresh: 100
                                         }
                                     },
                                     y: {
@@ -662,7 +674,9 @@
                                                         y: enc4
                                                     })
                                                 })
-                                            }
+                                            },
+                                            duration:10000,
+                                            refresh: 100
                                         }
                                     },
                                     y: {

@@ -57,5 +57,5 @@ def index():
   return render_template('monitor.html')
 
 if __name__ == '__main__':
-  socketio.run(app, debug = True)
+  socketio.run(app)
 
