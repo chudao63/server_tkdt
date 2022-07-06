@@ -120,7 +120,7 @@
 
     socket.on("event", data => {
         const p = document.getElementById("last_event");
-        alert("hello")
+        console.log(data)
         p.innerText = JSON.stringify(data)
     })
     
