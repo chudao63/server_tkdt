@@ -193,11 +193,11 @@
     <script src="https://www.gstatic.com/firebasejs/8.2.9/firebase-database.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!--  luxon lib = date and time: -->
-    <script src="luxon.min.js"></script>
+    <script src="{{ url_for('static',filename='js/luxon.min.js') }}"></script>
     <!-- adaptor luxon chartjs: -->
-    <script src="chartjs-adapter-luxon.min.js"></script>
+    <script src="{{ url_for('static',filename='js/chartjs-adapter-luxon.min.js') }}"></script>
      <!-- plugin js lib: -->
-    <script src="chartjs-plugin-streaming.min.js"></script>
+    <script src="{{ url_for('static',filename='js/chartjs-plugin-streaming.min.js') }}"></script>
     <script>      /*----- API: Firebase ------*/
           const firebaseConfig = {
                 apiKey: "AIzaSyDHry-v-PilQJYo_GZTNRQYd4Q7RDswV3w",
