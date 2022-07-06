@@ -134,6 +134,15 @@
 }
 </style>
 <body onload="realtimeClock()">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+    crossorigin="anonymous"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"
+    integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA=="
+    crossorigin="anonymous"></script>
+
+    
     <div class="content-header">  
         <p>
             <img class="img-position" src="{{ url_for('static',filename='cao-thang-technical-college.jpg') }}" alt="logo Cao Thang">
@@ -198,20 +207,21 @@
     <script src="{{ url_for('static',filename='js/chartjs-adapter-luxon.min.js') }}"></script>
      <!-- plugin js lib: -->
     <script src="{{ url_for('static',filename='js/chartjs-plugin-streaming.min.js') }}"></script>
-    <script>      /*----- API: Firebase ------*/
-          const firebaseConfig = {
-                apiKey: "AIzaSyDHry-v-PilQJYo_GZTNRQYd4Q7RDswV3w",
-                authDomain: "raspberry-firebase-nodejs.firebaseapp.com",
-                databaseURL: "https://raspberry-firebase-nodejs-default-rtdb.firebaseio.com",
-                projectId: "raspberry-firebase-nodejs",
-                storageBucket: "raspberry-firebase-nodejs.appspot.com",
-                messagingSenderId: "661890992924",
-                appId: "1:661890992924:web:39615393ab8c234970c8d9",
-                measurementId: "G-YB1CDDYEN4"
-            };
-                // Initialize Firebase
-                firebase.initializeApp(firebaseConfig);
-                var database = firebase.database();
+    <script>
+
+        //   const firebaseConfig = {
+        //         apiKey: "AIzaSyDHry-v-PilQJYo_GZTNRQYd4Q7RDswV3w",
+        //         authDomain: "raspberry-firebase-nodejs.firebaseapp.com",
+        //         databaseURL: "https://raspberry-firebase-nodejs-default-rtdb.firebaseio.com",
+        //         projectId: "raspberry-firebase-nodejs",
+        //         storageBucket: "raspberry-firebase-nodejs.appspot.com",
+        //         messagingSenderId: "661890992924",
+        //         appId: "1:661890992924:web:39615393ab8c234970c8d9",
+        //         measurementId: "G-YB1CDDYEN4"
+        //     };
+        //         // Initialize Firebase
+        //         firebase.initializeApp(firebaseConfig);
+        //         var database = firebase.database();
 
                 /*------- Khai báo -------*/
                 var enc1 , enc2 , enc3 , enc4;
@@ -299,11 +309,6 @@
                             interval = setInterval(update, 1);
                         }
                         
-                        getData_mm1();
-                        getData_mm2();
-                        getData_mm3();
-                        getData_mm4();
-
                         myChart_mm1.destroy();  
                         CreateChart_mm1();
                         myChart_mm2.destroy();
@@ -331,41 +336,35 @@
                         Stop_CreateChart_mm4();                        
                     }
 
+
+
+
+
+                    const socket = io();  
+
+                    var set_data = 0
+                    socket.on("event", data => {
+                        const p = document.getElementById("last_event");
+                        get_data(data)
+                    })
+
+                    const sendEvent = () => {
+                        const text = document.getElementById("event_textarea").value;
+                        const json = JSON.parse(text);
+                        socket.emit('event message', json);
+                    }
                     /* ------------------------------------ Get Data From firebase ----------------------------------------------*/
-                    function getData_mm1() {
-                        enc1 = firebase.database().ref('Moment').child('Moment 1');
-                        enc1.on('value', snap => {       // Cứ cập nhật data thì dán vào
-                        console.log("Moment 1: " + snap.val());
-                        enc1 = snap.val();
+          
+                    function get_data(data){
+                        enc1 = data.Moment_1
                         document.getElementById("mm1_Id").innerHTML = enc1;
-                        });
-                    }
-                    function getData_mm2() {
-                        enc2 = firebase.database().ref('Moment').child('Moment 2');
-                        enc2.on('value', snap => {       // Cứ cập nhật data thì dán vào
-                        console.log("Moment 2: " + snap.val());
-                        enc2 = snap.val();
+                        enc2 = data.Moment_2
                         document.getElementById("mm2_Id").innerHTML = enc2;
-                        });
-                    }
-                    function getData_mm3() {
-                        enc3 = firebase.database().ref('Moment').child('Moment 3');
-                        enc3.on('value', snap => {       // Cứ cập nhật data thì dán vào
-                        console.log("Moment 3: " + snap.val());
-                        enc3 = snap.val();
+                        enc3 = data.Moment_3
                         document.getElementById("mm3_Id").innerHTML = enc3;
-                        });
-                    }
-                    function getData_mm4() {
-                        enc4 = firebase.database().ref('Moment').child('Moment 4');
-                        enc4.on('value', snap => {       // Cứ cập nhật data thì dán vào
-                        console.log("Moment 4: " + snap.val());
-                        enc4 = snap.val();
+                        enc4 = data.Moment_4
                         document.getElementById("mm4_Id").innerHTML = enc4;
-                        });
                     }
-
-
                     /* ------------------------------------ CHART ----------------------------------------------*/
                     function CreateChart_mm1() {
                         var data = {

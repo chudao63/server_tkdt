@@ -44,10 +44,10 @@ def event():
     return 'OK'
 def background_thread():
     """Example of how to send server generated events to clients."""
-    count = 0
+   
     while True:
-        time.sleep(1)
-        count += 1
+        time.sleep(0.1)
+        
         socketio.emit('event',
                       {"Moment_1": random.randint(70, 100), "Moment_2":  random.randint(20, 50), "Moment_3": random.randint(1, 100),"Moment_4": random.randint(101, 299) },
                       namespace='/')
@@ -57,5 +57,5 @@ def index():
   return render_template('monitor.html')
 
 if __name__ == '__main__':
-  socketio.run(app)
+  socketio.run(app, debug = True)
 
