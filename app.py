@@ -47,14 +47,24 @@ def background_thread():
    
     while True:
         time.sleep(0.1)
-        
         socketio.emit('event',
                       {"Moment_1": random.randint(70, 100), "Moment_2":  random.randint(20, 50), "Moment_3": random.randint(1, 100),"Moment_4": random.randint(101, 299) },
                       namespace='/')
+
+data = {
+        "Moment_1": random.randint(70, 100), 
+        "Moment_2":  random.randint(20, 50), 
+        "Moment_3": random.randint(1, 100),
+        "Moment_4": random.randint(101, 299)
+       }
 @app.route('/')
 def index():
-  _thread.start_new_thread( background_thread, () )
-  return render_template('monitor.html')
+  # _thread.start_new_thread( background_thread, () )
+  return data
+
+@app.route("/sensor")
+def scan_sensor():
+  return {"id": f"sensor_S0000{random.randint(1, 10)}","type": "sensor", "value": random.randint(20, 100), "unit": "percentage"}
 
 if __name__ == '__main__':
   socketio.run(app)
