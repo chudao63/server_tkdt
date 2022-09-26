@@ -5,11 +5,14 @@ from flask_cors import CORS
 from flask_mqtt import Mqtt
 import logging
 import coloredlogs
+from flask_socketio import SocketIO, emit
+
 
 coloredlogs.install(level='INFO', fmt = 'LOGGING: %(asctime)s %(levelname)s %(message)s' )
 
 app =  Flask(__name__)
 api = Api(app)
+socketio = SocketIO(app, cors_allowed_origins="*")
 
 app.config['SQLALCHEMY_DATABASE_URI'] = f"mysql://root:123456@localhost/thiet_ke_dien_tu"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True

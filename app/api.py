@@ -2,11 +2,11 @@ import time
 from datetime import datetime
 
 from app.result_sensor import RESULT
-
+from flask_socketio import SocketIO, emit
 from app.models import GateWay, Sensor, DataSensor
 from flask_restful import Resource, Api, request, reqparse
 from app import api
-from app import db, mqtt
+from app import db, mqtt, socketio
 from app.parse import parse_body_data
 from app.subcriber import flag, result_scan_sensor
 from app.vntime import VnTimestamp
@@ -75,25 +75,27 @@ class ScanSensor(Resource):
         """
         Scan sensor mới
         """
-        data = request.get_json(force=True)
-        name_sensor = data.get("name_sensor")
-        name_gateway = data.get("name_gateway")
-        data_gateway = GateWay.query.filter(GateWay.name == name_gateway).one()
-        for sensor in data_gateway.sensors:
-            if name_sensor == sensor.__dict__.get("name"):
-                return {"message": "Not found new sensor"}
-        if (Sensor.query.filter(Sensor.name == name_sensor).all()):
-            data_sensor = Sensor.query.filter(Sensor.name == name_sensor).one()
-        else:
-            add_sensor = Sensor(name=name_sensor)
-            db.session.add(add_sensor)
-            db.session.commit()
-            data_sensor = Sensor.query.order_by(Sensor.id.desc()).first()
-        data_gateway.sensors.append(data_sensor)
-        db.session.add(data_gateway)
-        db.session.commit()
-        return data
+        # data = request.get_json(force=True)
+        # name_sensor = data.get("name_sensor")
+        # name_gateway = data.get("name_gateway")
+        # data_gateway = GateWay.query.filter(GateWay.name == name_gateway).one()
+        # for sensor in data_gateway.sensors:
+        #     if name_sensor == sensor.__dict__.get("name"):
+        #         return {"message": "Not found new sensor"}
+        # if (Sensor.query.filter(Sensor.name == name_sensor).all()):
+        #     data_sensor = Sensor.query.filter(Sensor.name == name_sensor).one()
+        # else:
+        #     add_sensor = Sensor(name=name_sensor)
+        #     db.session.add(add_sensor)
+        #     db.session.commit()
+        #     data_sensor = Sensor.query.order_by(Sensor.id.desc()).first()
+        # data_gateway.sensors.append(data_sensor)
+        # db.session.add(data_gateway)
+        # db.session.commit()
+        # return data
         # mqtt.publish("/scan_sensor_tkdt", payload="scan")
+        emit('event', "hello", broadcast=True, namespace='/')
+
 
 
 class ReadDataSensor(Resource):
@@ -124,7 +126,6 @@ class ReadDataSensor(Resource):
         timeNow = VnTimestamp.get_date_time_str(timeStamp)
         data = request.get_json(force=True)
         id_sensor = (Sensor.query.filter(Sensor.name == data.get("sensor")).one().__dict__).get("id")
-
         insert_data = DataSensor(id_sensor=id_sensor, value=data.get("value"), unit=data.get("unit"),
                                  battery=data.get("battery"), create_at=timeNow)
         db.session.add(insert_data)
