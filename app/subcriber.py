@@ -12,9 +12,9 @@ from flask import current_app
 flag = 0
 result_scan_sensor = {}
 def scan_sensor(data):
-    name_sensor = data['get_data_sensor'].get("mac_address")
+    name_sensor = data['get_data_sensor'].get("mac_sensor")
     name_gateway = data['get_data_sensor'].get("mac_gateway")
-    print(data)
+
     data_gateway = GateWay.query.filter(GateWay.name == name_gateway).one()
 
     for sensor in data_gateway.sensors:
