@@ -63,8 +63,11 @@ def handle_mqtt_message(client, userdata, message):
             insert_gateway = GateWay(name = payload["scan_gateway"]["mac_address"])
             db.session.add(insert_gateway)
             db.session.commit()
+            with app.app_context():
+                emit('event', payload["scan_gateway"], broadcast=True, namespace='/')
         else:
-            logging.info("Không có gate way mới")
+            with app.app_context():
+                emit('event', "không tìm thấy gateway mới", broadcast=True, namespace='/')
 
 
 
