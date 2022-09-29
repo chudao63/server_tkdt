@@ -56,18 +56,19 @@ def handle_mqtt_message(client, userdata, message):
         result_scan_sensor = scan_sensor(payload)
         logging.info(result_scan_sensor)
         with app.app_context():
-            emit('event', result_scan_sensor, broadcast=True, namespace='/')
+            emit('scan_sensor', result_scan_sensor, broadcast=True, namespace='/')
 
     if "scan_gateway" in payload:
+
         if not (GateWay.query.filter(GateWay.name == payload['scan_gateway']['mac_address']).all()):
             insert_gateway = GateWay(name = payload["scan_gateway"]["mac_address"])
             db.session.add(insert_gateway)
             db.session.commit()
             with app.app_context():
-                emit('event', payload["scan_gateway"], broadcast=True, namespace='/')
+                emit('scan_gateway', payload["scan_gateway"], broadcast=True, namespace='/')
         else:
             with app.app_context():
-                emit('event', "không tìm thấy gateway mới", broadcast=True, namespace='/')
+                emit('scan_gateway', "không tìm thấy gateway mới", broadcast=True, namespace='/')
 
 
 
