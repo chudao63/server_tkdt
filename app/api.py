@@ -1,3 +1,4 @@
+import json
 import time
 from datetime import datetime
 
@@ -26,7 +27,8 @@ class ReadGateway(Resource):
         return res
 
     def post(self):
-        pass
+        mqtt.publish("/scan", payload='{"action": "scan_gateway"}')
+
 
 
 class ReadDataGateway(Resource):
@@ -75,9 +77,8 @@ class ScanSensor(Resource):
         """
         Scan sensor mới
         """
-        # data = request.get_json(force=True)
-        # name_sensor = data.get("name_sensor")
-        # name_gateway = data.get("name_gateway")
+        data = request.get_json(force=True)
+        name_gateway = data.get("name_gateway")
         # data_gateway = GateWay.query.filter(GateWay.name == name_gateway).one()
         # for sensor in data_gateway.sensors:
         #     if name_sensor == sensor.__dict__.get("name"):
@@ -93,8 +94,9 @@ class ScanSensor(Resource):
         # db.session.add(data_gateway)
         # db.session.commit()
         # return data
-        # mqtt.publish("/scan_sensor_tkdt", payload="scan")
-        emit('event', "hello", broadcast=True, namespace='/')
+        data_publish = {"action": "scan_sensor", "name_gateway": name_gateway}
+        mqtt.publish("/scan", payload= json.dumps(data_publish))
+        # emit('event', "hello", broadcast=True, namespace='/')
 
 
 
