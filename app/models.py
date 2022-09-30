@@ -23,10 +23,12 @@ class DataSensor(db.Model):
     id = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
     id_sensor = Column(Integer, ForeignKey("sensor.id"), nullable = False)
     value = Column(Float, nullable = False)
-    unit = Column(String(255), nullable = False)
-    battery = Column(Float, nullable = False)
+    type_sensor = Column(String(255), nullable = True)
+    type_device = Column(String(255), nullable = True)
+    unit = Column(String(255), nullable =  True)
+    battery = Column(Float, nullable = True)
     create_at = Column(String(255), nullable = False)
-    sensor = relationship("Sensor", backref = "data_sensor")
+
 
 
 
