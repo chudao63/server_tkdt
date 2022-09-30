@@ -84,4 +84,4 @@ def handle_mqtt_message(client, userdata, message):
     if "get_data_sensor" in payload:
         insert_data_sensor(payload)
         with app.app_context():
-            emit('scan_gateway', payload["get_data_sensor"], broadcast=True, namespace='/')
+            emit('data_sensor', payload["get_data_sensor"], broadcast=True, namespace='/')

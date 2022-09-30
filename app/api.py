@@ -106,7 +106,8 @@ class ReadDataSensor(Resource):
         Lấy tất cả data đang có
         """
         res = []
-        read_data = DataSensor.query.all()
+        read_data = DataSensor.query.order_by(
+                        DataSensor.id.desc()).limit(10).all()
         for data in read_data:
             dataDict = data.__dict__
             dataDict.pop("_sa_instance_state")
