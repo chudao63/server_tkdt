@@ -1,16 +1,20 @@
 import json
-import time
 from datetime import datetime
 
-from app.result_sensor import RESULT
-from flask_socketio import SocketIO, emit
 from app.models import GateWay, Sensor, DataSensor
 from flask_restful import Resource, Api, request, reqparse
 from app import api
 from app import db, mqtt, socketio
-from app.parse import parse_body_data
-from app.subcriber import flag, result_scan_sensor
 from app.vntime import VnTimestamp
+
+class CreateGateWay(Resource):
+    def post(self):
+        data = request.get_json(force=True)
+        create_gateway = GateWay(name = data['name'])
+        db.session.add(create_gateway)
+        db.session.commit()
+        return("Add gateway susscessful")
+
 
 class ReadGateway(Resource):
     def get(self):
@@ -98,7 +102,9 @@ class ScanSensor(Resource):
         mqtt.publish("/scan", payload= json.dumps(data_publish))
         # emit('event', "hello", broadcast=True, namespace='/')
 
-
+class Test(Resource):
+    def get(self):
+        return "HELLO WORLD"
 
 class ReadDataSensor(Resource):
     def get(self):
@@ -151,4 +157,12 @@ api.add_resource(
 api.add_resource(
     ReadDataGateway,
     "/data_gateway"
+)
+api.add_resource(
+    Test,
+    "/"
+)
+api.add_resource(
+    CreateGateWay,
+    "/create_gateway"
 )
