@@ -39,22 +39,26 @@ def scan_sensor(data):
 
 
 def insert_data_sensor(data):
-    name_sensor = data['get_data_sensor'].get("mac_sensor")
-    now = datetime.now()
-    timeStamp = now.timestamp()
-    timeNow = VnTimestamp.get_date_time_str(timeStamp)
-    id_sensor = (Sensor.query.filter(Sensor.name == name_sensor).one().__dict__).get("id")
-    insert_data = DataSensor(id_sensor=id_sensor, type_sensor=data["get_data_sensor"]["type_sensor"],
-                             type_device=data["get_data_sensor"]["type_device"], value=data['get_data_sensor'].get("value"),
-                             unit=data["get_data_sensor"]["unit"],
-                             battery=data["get_data_sensor"]["battery"], create_at=timeNow)
-    db.session.add(insert_data)
-    db.session.commit()
+    try:
+        name_sensor = data['get_data_sensor'].get("mac_sensor")
+        now = datetime.now()
+        timeStamp = now.timestamp()
+        timeNow = VnTimestamp.get_date_time_str(timeStamp)
+        id_sensor = (Sensor.query.filter(Sensor.name == name_sensor).one().__dict__).get("id")
+        insert_data = DataSensor(id_sensor=id_sensor, type_sensor=data["get_data_sensor"]["type_sensor"],
+                                 type_device=data["get_data_sensor"]["type_device"], value=data['get_data_sensor'].get("value"),
+                                 unit=data["get_data_sensor"]["unit"],
+                                 battery=data["get_data_sensor"]["battery"], create_at=timeNow)
+        db.session.add(insert_data)
+        db.session.commit()
+    except:
+        logging.info("Loi insert data")
 
 
 @mqtt.on_connect()
 def handle_connect(client, userdata, flags, rc):
     mqtt.subscribe("/result_scan")
+    logging.info("CONNECTED TO MQTT")
 
 
 @mqtt.on_message()
@@ -69,17 +73,17 @@ def handle_mqtt_message(client, userdata, message):
         with app.app_context():
             emit('scan_sensor', result_scan_sensor, broadcast=True, namespace='/')
 
-    if "scan_gateway" in payload:
-        if not (GateWay.query.filter(GateWay.name == payload['scan_gateway']['mac_address']).all()):
-            insert_gateway = GateWay(name=payload["scan_gateway"]["mac_address"])
-            db.session.add(insert_gateway)
-            db.session.commit()
-            with app.app_context():
-                emit('scan_gateway', payload["scan_gateway"], broadcast=True, namespace='/')
-        else:
-            with app.app_context():
-                logging.info("không tìm thấy gateway mới")
-                emit('scan_gateway', "không tìm thấy gateway mới", broadcast=True, namespace='/')
+    # if "scan_gateway" in payload:
+    #     if not (GateWay.query.filter(GateWay.name == payload['scan_gateway']['mac_address']).all()):
+    #         insert_gateway = GateWay(name=payload["scan_gateway"]["mac_address"])
+    #         db.session.add(insert_gateway)
+    #         db.session.commit()
+    #         with app.app_context():
+    #             emit('scan_gateway', payload["scan_gateway"], broadcast=True, namespace='/')
+    #     else:
+    #         with app.app_context():
+    #             logging.info("không tìm thấy gateway mới")
+    #             emit('scan_gateway', "không tìm thấy gateway mới", broadcast=True, namespace='/')
 
     if "get_data_sensor" in payload:
         insert_data_sensor(payload)
