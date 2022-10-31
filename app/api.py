@@ -1,10 +1,9 @@
 import json
 from datetime import datetime
-
+from flask_socketio import emit
 from app.models import GateWay, Sensor, DataSensor
 from flask_restful import Resource, Api, request, reqparse
-from app import api
-from app import db, mqtt, socketio
+from app import db, mqtt, socketio,api, app
 from app.vntime import VnTimestamp
 
 class CreateGateWay(Resource):
@@ -66,11 +65,8 @@ class ReadDataGateway(Resource):
 class ReadDataGatewayByIdSensor(Resource):
     def get(self):
         """
-        Lấy data từ các sensor thuộc gateway
-        body: {
-            "gateway_name": "string",
-            "sensor_name": "string
-        }
+        Lấy data từ các sensor id
+        params: id: id sensor
         """
         parser = reqparse.RequestParser()
         parser.add_argument('id')
@@ -87,23 +83,7 @@ class ReadDataGatewayByIdSensor(Resource):
             list_time_data_sensor.append(data_sensor_dict.get("create_at"))
         res.update( {args['id']: {"value": list_data_sensor, "time": list_time_data_sensor}})
         return res
-        # data = request.get_json(force=True)
-        # gateways = GateWay.query.filter(GateWay.name == data.get("gateway_name")).one()
-        # if "sensor_name" in data:
-        #     for sensor_gateway in gateways.sensors:
-        #         if (sensor_gateway.name == data.get("sensor_name")):
-        #             data_sensors = DataSensor.query.filter(DataSensor.id_sensor == sensor_gateway.id).order_by(
-        #                 DataSensor.id.desc()).limit(10).all()
-        #     list_data_sensor = []
-        #     list_time_data_sensor = []
-        #     for data_sensor in data_sensors:
-        #         data_sensor_dict = data_sensor.__dict__
-        #         data_sensor_dict.pop("_sa_instance_state")
-        #         list_data_sensor.append(data_sensor_dict.get("value"))
-        #         list_time_data_sensor.append(data_sensor_dict.get("create_at"))
-        #     res.update({data.get("gateway_name"): {
-        #         data.get("sensor_name"): {"value": list_data_sensor, "time": list_time_data_sensor}}})
-        #     return res
+
 
 
 class ScanSensor(Resource):
@@ -147,7 +127,11 @@ class ScanSensor(Resource):
 
 class Test(Resource):
     def get(self):
+        with app.app_context():
+            emit('event', "hello", broadcast=True, namespace='/')
         return "HELLO WORLD"
+
+
 
 class ReadDataSensor(Resource):
     def get(self):
