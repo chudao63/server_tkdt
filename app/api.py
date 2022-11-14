@@ -71,20 +71,17 @@ class ReadDataGatewayByIdSensor(Resource):
         parser = reqparse.RequestParser()
         parser.add_argument('id')
         args = parser.parse_args()
-        res = {}
+        res = []
         data_sensors = DataSensor.query.filter(DataSensor.id_sensor == args['id']).order_by(DataSensor.id.desc()).limit(10).all()
-        print(data_sensors)
-        list_data_sensor = []
-        list_time_data_sensor = []
         for data_sensor in data_sensors:
             data_sensor_dict = data_sensor.__dict__
             data_sensor_dict.pop("_sa_instance_state")
-            list_data_sensor.append(data_sensor_dict.get("value"))
-            list_time_data_sensor.append(data_sensor_dict.get("create_at"))
-        res.update( {args['id']: {"value": list_data_sensor, "time": list_time_data_sensor}})
-        return res
+            res.append({"value": data_sensor_dict.get("value"), "time":data_sensor_dict.get("create_at") })
+        return {"data": res}
 
-
+class SettimeTimeSensor(Resource):
+    data = request.get_json(force=True)
+    print()
 
 class ScanSensor(Resource):
     def get(self):
@@ -198,4 +195,12 @@ api.add_resource(
     ReadDataGatewayByIdSensor,
     "/get_data_by_id"
 )
+""" Long
+    Body1:    {"id_sensor": string, "delete": bool}
+    Body2:    {"id_sensor": string, "set_time": int}
+"""
 
+"""
+    1, Scan sensor: data, {"unit_card": string, "delete": bool - fix = 0, "set_time": int - fix}
+    2, mess:{"data_setting": {"unit_card": string, "delete": bool, "set_time": int}}
+"""

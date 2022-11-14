@@ -4,14 +4,14 @@ from sqlalchemy.orm import relationship, backref
 
 sensor_gateway = db.Table("sensor_gateway",
                           Column("sensor_id", Integer, ForeignKey("sensor.id"), primary_key=True),
-                          Column("gateway_id", Integer, ForeignKey("gateway.id"), primary_key=True)
+                          Column("gateway_id", Integer, ForeignKey("gateway.id"), primary_key=True),
+                          Column("active", Integer, nullable = True),
+                          Column("time", Float, default = 10, nullable = True)
                           )
-
 class GateWay(db.Model):
     __tablename__ = "gateway"
     id = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
     name = Column(String(255), nullable=False)
-
 
 class Sensor(db.Model):
     id = Column(Integer, primary_key=True, autoincrement=True, nullable=False)

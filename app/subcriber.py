@@ -17,7 +17,6 @@ result_scan_sensor = {}
 def scan_sensor(data):
     name_sensor = data['scan_sensor'].get("mac_sensor")
     name_gateway = data['scan_sensor'].get("mac_gateway")
-
     data_gateway = GateWay.query.filter(GateWay.name == name_gateway).one()
 
     for sensor in data_gateway.sensors:
@@ -53,14 +52,10 @@ def insert_data_sensor(data):
         db.session.commit()
     except:
         logging.info("Loi insert data")
-
-
 @mqtt.on_connect()
 def handle_connect(client, userdata, flags, rc):
     mqtt.subscribe("/result_scan")
     logging.info("CONNECTED TO MQTT")
-
-
 @mqtt.on_message()
 def handle_mqtt_message(client, userdata, message):
     rawData = message.payload.decode('utf-8')
