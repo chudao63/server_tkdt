@@ -11,7 +11,7 @@ from flask_socketio import SocketIO, emit
 coloredlogs.install(level='INFO', fmt = 'LOGGING: %(asctime)s %(levelname)s %(message)s' )
 
 app =  Flask(__name__)
-api = Api(app)
+api1 = Api(app)
 socketio = SocketIO(app, cors_allowed_origins="*")
 
 app.config['SQLALCHEMY_DATABASE_URI'] = f"mysql://root:123456@localhost/thiet_ke_dien_tu"

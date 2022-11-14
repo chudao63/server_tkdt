@@ -3,7 +3,7 @@ from datetime import datetime
 from flask_socketio import emit
 from app.models import GateWay, Sensor, DataSensor
 from flask_restful import Resource, Api, request, reqparse
-from app import db, mqtt, socketio,api, app
+from app import db, mqtt, app
 from app.vntime import VnTimestamp
 
 class CreateGateWay(Resource):
@@ -80,8 +80,10 @@ class ReadDataGatewayByIdSensor(Resource):
         return {"data": res}
 
 class SettimeTimeSensor(Resource):
-    data = request.get_json(force=True)
-    print()
+    def get(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument("time")
+        return parser.parse_args()
 
 class ScanSensor(Resource):
     def get(self):
@@ -166,35 +168,6 @@ class ReadDataSensor(Resource):
         return "Thêm mới thành công"
 
 
-api.add_resource(
-    ScanSensor,
-    "/scan_sensor"
-)
-api.add_resource(
-    ReadDataSensor,
-    "/data_sensor"
-)
-api.add_resource(
-    ReadGateway,
-    "/gateway"
-)
-api.add_resource(
-    ReadDataGateway,
-    "/data_gateway"
-)
-api.add_resource(
-    Test,
-    "/"
-)
-api.add_resource(
-    CreateGateWay,
-    "/create_gateway"
-)
-
-api.add_resource(
-    ReadDataGatewayByIdSensor,
-    "/get_data_by_id"
-)
 """ Long
     Body1:    {"id_sensor": string, "delete": bool}
     Body2:    {"id_sensor": string, "set_time": int}

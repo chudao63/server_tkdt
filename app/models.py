@@ -1,4 +1,4 @@
-from app import db
+from app import db, app
 from sqlalchemy import Column, Integer, Float, String, ForeignKey, func,DateTime
 from sqlalchemy.orm import relationship, backref
 
@@ -31,5 +31,5 @@ class DataSensor(db.Model):
 
 
 
-
-db.create_all()
+with app.app_context():
+    db.create_all()
