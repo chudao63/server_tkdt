@@ -14,7 +14,7 @@ app =  Flask(__name__)
 api1 = Api(app)
 socketio = SocketIO(app, cors_allowed_origins="*")
 
-app.config['SQLALCHEMY_DATABASE_URI'] = f"mysql://root:123456@localhost/thiet_ke_dien_tu"
+app.config['SQLALCHEMY_DATABASE_URI'] = "mysql://root:123456@localhost/thiet_ke_dien_tu"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 app.config['SQLALCHEMY_POOL_SIZE'] = 20
 db = SQLAlchemy(app)

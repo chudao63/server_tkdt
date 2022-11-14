@@ -30,3 +30,14 @@ api1.add_resource(
     ReadDataGatewayByIdSensor,
     "/get_data_by_id"
 )
+
+api1.add_resource(
+    SettimeTimeSensor,
+    "/set_time"
+)
+
+
+api1.add_resource(
+    DeleteSensor,
+    "/delete_sensor"
+)

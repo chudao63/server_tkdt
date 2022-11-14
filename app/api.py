@@ -80,11 +80,22 @@ class ReadDataGatewayByIdSensor(Resource):
         return {"data": res}
 
 class SettimeTimeSensor(Resource):
-    def get(self):
-        parser = reqparse.RequestParser()
-        parser.add_argument("time")
-        return parser.parse_args()
+    def post(self):
+        data = request.get_json(force=True)
+        id_sensor = data['id_sensor']
+        set_time  = data['set_time']
+        db.engine.execute(f"UPDATE sensor_gateway SET time = {set_time} WHERE sensor_id = {id_sensor};")
 
+        return "Update successful"
+
+class DeleteSensor(Resource):
+    def post(self):
+        data = request.get_json(force=True)
+        id_sensor = data['id_sensor']
+        delete  = data['delete']
+        db.engine.execute(f"UPDATE sensor_gateway SET active = {delete} WHERE sensor_id = {id_sensor};")
+
+        return "Update successful"
 class ScanSensor(Resource):
     def get(self):
         """
