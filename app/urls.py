@@ -19,7 +19,7 @@ api1.add_resource(
 )
 api1.add_resource(
     Test,
-    "/"
+    "/test"
 )
 api1.add_resource(
     CreateGateWay,
