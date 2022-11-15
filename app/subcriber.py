@@ -15,13 +15,12 @@ result_scan_sensor = {}
 
 
 def scan_sensor(data):
-    name_sensor = data['scan_sensor'].get("unicast")
     with app.app_context():
+        name_sensor = data['scan_sensor'].get("unicast")
         data_gateway = GateWay.query.get(1)
-    for sensor in data_gateway.sensors:
-        if name_sensor == sensor.__dict__.get("name"):
-            return {"message": "Not found new sensor"}
-    with app.app_context():
+        for sensor in data_gateway.sensors:
+            if name_sensor == sensor.__dict__.get("name"):
+                return {"message": "Not found new sensor"}
         if (Sensor.query.filter(Sensor.name == name_sensor).all()):
             data_sensor = Sensor.query.filter(Sensor.name == name_sensor).one()
         else:
@@ -37,27 +36,28 @@ def scan_sensor(data):
         with app.app_context():
             mqtt.publish("/confirm_scan", payload=json.dumps({"data_setting": {"unicast": name_sensor, "delete": 0, "time": 10}}))
 
-    return data
+        return data
 
 
 def insert_data_sensor(data):
     try:
-        name_sensor = data['get_data_sensor'].get("unicast")
-        now = datetime.now()
-        timeStamp = now.timestamp()
-        timeNow = VnTimestamp.get_date_time_str(timeStamp)
-        id_sensor = Sensor.query.get(1)
-        print(id_sensor)
-        insert_data = DataSensor(id_sensor=id_sensor, type_sensor=data["get_data_sensor"]["type_sensor"],
-                                 type_device=data["get_data_sensor"]["type_device"], value=data['get_data_sensor'].get("value"),
-                                 unit=data["get_data_sensor"]["unit"],
-                                 battery=data["get_data_sensor"]["battery"], create_at=timeNow)
-        db.session.add(insert_data)
-        db.session.commit()
+        with app.app_context():
+            name_sensor = data['get_data_sensor'].get("unicast")
+            now = datetime.now()
+            timeStamp = now.timestamp()
 
 
-    except Exception as e:
-        logging.info("Loi insert data")
+            timeNow = VnTimestamp.get_date_time_str(timeStamp)
+
+            insert_data = DataSensor(id_sensor=name_sensor, type_sensor=data["get_data_sensor"]["type_sensor"],
+                                     type_device=data["get_data_sensor"]["type_device"], value=data['get_data_sensor'].get("value"),
+                                     unit=data["get_data_sensor"]["unit"],
+                                     battery=data["get_data_sensor"]["battery"], create_at=timeNow)
+            db.session.add(insert_data)
+            db.session.commit()
+    except:
+        logging.info("Insert data error")
+
 
 @mqtt.on_connect()
 def handle_connect(client, userdata, flags, rc):
