@@ -90,6 +90,7 @@ def handle_mqtt_message(client, userdata, message):
     if "get_data_sensor" in payload:
         unitcast = payload.get("get_data_sensor").get("unitcast")
         insert_data_sensor(payload)
+        mqtt.publish("/confirm_scan",payload=json.dumps({"data_setting": {"unicast": unitcast, "delete": 0, "time": 10}}))
+
         with app.app_context():
             emit('data_sensor', payload["get_data_sensor"], broadcast=True, namespace='/')
-            mqtt.publish("/confirm_scan", payload=json.dumps({"data_setting": {"unicast": unitcast, "delete": 0, "time": 10}}))
