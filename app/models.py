@@ -16,6 +16,8 @@ class GateWay(db.Model):
 class Sensor(db.Model):
     id = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
     name = Column(String(255), unique = True, nullable=False)
+    active = Column(Integer,default = 1 ,nullable=True)
+    time = Column(Float, default=10, nullable=True)
     gateways = relationship("GateWay", secondary = sensor_gateway, lazy = 'subquery', backref = backref('sensors', lazy = False))
 
 class DataSensor(db.Model):

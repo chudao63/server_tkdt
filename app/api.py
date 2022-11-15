@@ -72,12 +72,16 @@ class ReadDataGatewayByIdSensor(Resource):
         parser.add_argument('id')
         args = parser.parse_args()
         res = []
-        data_sensors = DataSensor.query.filter(DataSensor.id_sensor == args['id']).order_by(DataSensor.id.desc()).limit(10).all()
-        for data_sensor in data_sensors:
-            data_sensor_dict = data_sensor.__dict__
-            data_sensor_dict.pop("_sa_instance_state")
-            res.append({"value": data_sensor_dict.get("value"), "time":data_sensor_dict.get("create_at") })
-        return {"data": res}
+        sensor = Sensor.query.get(args['id'])
+        if sensor.active == 1:
+            data_sensors = DataSensor.query.filter(DataSensor.id_sensor == args['id']).order_by(DataSensor.id.desc()).limit(10).all()
+            for data_sensor in data_sensors:
+                data_sensor_dict = data_sensor.__dict__
+                data_sensor_dict.pop("_sa_instance_state")
+                res.append({"value": data_sensor_dict.get("value"), "time":data_sensor_dict.get("create_at") })
+            return {"data": res}
+        else:
+            return {"data": []}
 
 class SettimeTimeSensor(Resource):
     def post(self):
@@ -93,6 +97,9 @@ class DeleteSensor(Resource):
         data = request.get_json(force=True)
         id_sensor = data['id_sensor']
         delete  = data['delete']
+        sensor = Sensor.query.get(id_sensor)
+        sensor.active = data['delete']
+        db.session.commit()
         db.engine.execute(f"UPDATE sensor_gateway SET active = {delete} WHERE sensor_id = {id_sensor};")
 
         return "Update successful"
@@ -107,7 +114,8 @@ class ScanSensor(Resource):
             sensorDict = sensor.__dict__
             sensorDict.pop("_sa_instance_state")
             sensorDict.pop("gateways")
-            response.append(sensorDict)
+            if sensorDict.get("active") == 1:
+                response.append(sensorDict)
         return response
 
     def post(self):
