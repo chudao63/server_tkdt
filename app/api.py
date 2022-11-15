@@ -76,7 +76,7 @@ class ReadDataGatewayByIdSensor(Resource):
             res = []
             sensor = Sensor.query.get(args['id'])
             if sensor.active == 1:
-                data_sensors = DataSensor.query.filter(DataSensor.id_sensor == args['id']).order_by(DataSensor.id.desc()).limit(10).all()
+                data_sensors = DataSensor.query.filter(DataSensor.id_sensor == args['id']).order_by(DataSensor.id.asc()).limit(10).all()
                 for data_sensor in data_sensors:
                     data_sensor_dict = data_sensor.__dict__
                     data_sensor_dict.pop("_sa_instance_state")
