@@ -1,4 +1,5 @@
 import json
+import logging
 from datetime import datetime
 from flask_socketio import emit
 from app.models import GateWay, Sensor, DataSensor
@@ -68,20 +69,23 @@ class ReadDataGatewayByIdSensor(Resource):
         Lấy data từ các sensor id
         params: id: id sensor
         """
-        parser = reqparse.RequestParser()
-        parser.add_argument('id')
-        args = parser.parse_args()
-        res = []
-        sensor = Sensor.query.get(args['id'])
-        if sensor.active == 1:
-            data_sensors = DataSensor.query.filter(DataSensor.id_sensor == args['id']).order_by(DataSensor.id.desc()).limit(10).all()
-            for data_sensor in data_sensors:
-                data_sensor_dict = data_sensor.__dict__
-                data_sensor_dict.pop("_sa_instance_state")
-                res.append({"value": data_sensor_dict.get("value"), "time":data_sensor_dict.get("create_at") })
-            return {"data": res}
-        else:
-            return {"data": []}
+        try:
+            parser = reqparse.RequestParser()
+            parser.add_argument('id')
+            args = parser.parse_args()
+            res = []
+            sensor = Sensor.query.get(args['id'])
+            if sensor.active == 1:
+                data_sensors = DataSensor.query.filter(DataSensor.id_sensor == args['id']).order_by(DataSensor.id.desc()).limit(10).all()
+                for data_sensor in data_sensors:
+                    data_sensor_dict = data_sensor.__dict__
+                    data_sensor_dict.pop("_sa_instance_state")
+                    res.append({"value": data_sensor_dict.get("value"), "time":data_sensor_dict.get("create_at") })
+                return {"data": res}
+            else:
+                return {"data": []}
+        except:
+            logging.info("Loi query data")
 
 class SettimeTimeSensor(Resource):
     def post(self):
