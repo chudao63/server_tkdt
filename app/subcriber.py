@@ -9,31 +9,34 @@ from datetime import datetime
 from flask_socketio import SocketIO, emit
 from app import app
 from flask import current_app
-
+import json
 flag = 0
 result_scan_sensor = {}
 
 
 def scan_sensor(data):
-    name_sensor = data['scan_sensor'].get("mac_sensor")
-    name_gateway = data['scan_sensor'].get("mac_gateway")
-    data_gateway = GateWay.query.filter(GateWay.name == name_gateway).one()
-
+    name_sensor = data['scan_sensor'].get("unicast")
+    with app.app_context():
+        data_gateway = GateWay.query.get(1)
     for sensor in data_gateway.sensors:
         if name_sensor == sensor.__dict__.get("name"):
             return {"message": "Not found new sensor"}
-
-    if (Sensor.query.filter(Sensor.name == name_sensor).all()):
-        data_sensor = Sensor.query.filter(Sensor.name == name_sensor).one()
-    else:
-        add_sensor = Sensor(name=name_sensor)
-        db.session.add(add_sensor)
+    with app.app_context():
+        if (Sensor.query.filter(Sensor.name == name_sensor).all()):
+            data_sensor = Sensor.query.filter(Sensor.name == name_sensor).one()
+        else:
+            add_sensor = Sensor(name=name_sensor)
+            db.session.add(add_sensor)
+            db.session.commit()
+            data_sensor = Sensor.query.order_by(Sensor.id.desc()).first()
+        data_gateway.sensors.append(data_sensor)
+        db.session.expunge(data_sensor)
+        db.session.add(data_gateway)
         db.session.commit()
-        data_sensor = Sensor.query.order_by(Sensor.id.desc()).first()
-    data_gateway.sensors.append(data_sensor)
-    db.session.add(data_gateway)
-    db.session.commit()
-    insert_data_sensor(data)
+        insert_data_sensor(data)
+        with app.app_context():
+            mqtt.publish("/confirm_scan", payload=json.dumps({"data_setting": {"unicast": name_sensor, "delete": 0, "time": 10}}))
+
     return data
 
 

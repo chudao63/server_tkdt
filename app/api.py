@@ -88,7 +88,8 @@ class SettimeTimeSensor(Resource):
         data = request.get_json(force=True)
         id_sensor = data['id_sensor']
         set_time  = data['set_time']
-        db.engine.execute(f"UPDATE sensor_gateway SET time = {set_time} WHERE sensor_id = {id_sensor};")
+
+        db.engine.execute(f"UPDATE sensor SET time = {set_time} WHERE id = {id_sensor};")
 
         return "Update successful"
 
@@ -100,7 +101,7 @@ class DeleteSensor(Resource):
         sensor = Sensor.query.get(id_sensor)
         sensor.active = data['delete']
         db.session.commit()
-        db.engine.execute(f"UPDATE sensor_gateway SET active = {delete} WHERE sensor_id = {id_sensor};")
+        db.engine.execute(f"UPDATE sensor SET active = {delete} WHERE id = {id_sensor};")
 
         return "Update successful"
 class ScanSensor(Resource):
@@ -145,6 +146,7 @@ class ScanSensor(Resource):
 
 class Test(Resource):
     def get(self):
+        mqtt.publish("/result_scan", payload= json.dumps({'scan_sensor': {'mac_gateway': '123124', 'unicast': 2, 'type_sensor': 1, 'type_device': 'sensor', 'value': 29,'unit': 'celsius', 'battery': 22}}))
         with app.app_context():
             emit('event', "hello", broadcast=True, namespace='/')
         return "HELLO WORLD"
