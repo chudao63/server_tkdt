@@ -42,19 +42,23 @@ def scan_sensor(data):
 
 def insert_data_sensor(data):
     try:
-        name_sensor = data['get_data_sensor'].get("mac_sensor")
+        name_sensor = data['get_data_sensor'].get("unicast")
         now = datetime.now()
         timeStamp = now.timestamp()
         timeNow = VnTimestamp.get_date_time_str(timeStamp)
-        id_sensor = (Sensor.query.filter(Sensor.name == name_sensor).one().__dict__).get("id")
+        id_sensor = Sensor.query.get(1)
+        print(id_sensor)
         insert_data = DataSensor(id_sensor=id_sensor, type_sensor=data["get_data_sensor"]["type_sensor"],
                                  type_device=data["get_data_sensor"]["type_device"], value=data['get_data_sensor'].get("value"),
                                  unit=data["get_data_sensor"]["unit"],
                                  battery=data["get_data_sensor"]["battery"], create_at=timeNow)
         db.session.add(insert_data)
         db.session.commit()
-    except:
+
+
+    except Exception as e:
         logging.info("Loi insert data")
+
 @mqtt.on_connect()
 def handle_connect(client, userdata, flags, rc):
     mqtt.subscribe("/result_scan")
@@ -84,6 +88,8 @@ def handle_mqtt_message(client, userdata, message):
     #             emit('scan_gateway', "không tìm thấy gateway mới", broadcast=True, namespace='/')
 
     if "get_data_sensor" in payload:
+        unitcast = payload.get("get_data_sensor").get("unitcast")
         insert_data_sensor(payload)
         with app.app_context():
             emit('data_sensor', payload["get_data_sensor"], broadcast=True, namespace='/')
+            mqtt.publish("/confirm_scan", payload=json.dumps({"data_setting": {"unicast": unitcast, "delete": 0, "time": 10}}))

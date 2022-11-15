@@ -146,7 +146,7 @@ class ScanSensor(Resource):
 
 class Test(Resource):
     def get(self):
-        mqtt.publish("/result_scan", payload= json.dumps({'scan_sensor': {'mac_gateway': '123124', 'unicast': 2, 'type_sensor': 1, 'type_device': 'sensor', 'value': 29,'unit': 'celsius', 'battery': 22}}))
+        mqtt.publish("/result_scan", payload= json.dumps({'scan_sensor': {'mac_gateway': '123124', 'unicast': 4, 'type_sensor': 1, 'type_device': 'sensor', 'value': 29,'unit': 'celsius', 'battery': 22}}))
         with app.app_context():
             emit('event', "hello", broadcast=True, namespace='/')
         return "HELLO WORLD"
