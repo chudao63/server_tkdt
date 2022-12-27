@@ -40,17 +40,19 @@ def scan_sensor(data):
 
 
 def insert_data_sensor(data):
-    with app.app_context():
-        name_sensor = data['get_data_sensor'].get("unicast")
-        now = datetime.now()
-        time = now.strftime("%H:%M:%S")
-        insert_data = DataSensor(id_sensor=name_sensor, type_sensor=data["get_data_sensor"]["type_sensor"],
-                                 type_device=data["get_data_sensor"]["type_device"], value=data['get_data_sensor'].get("value"),
-                                 unit=data["get_data_sensor"]["unit"],
-                                 battery=data["get_data_sensor"]["battery"], create_at=time)
-        db.session.add(insert_data)
-        db.session.commit()
-
+    try:
+        with app.app_context():
+            name_sensor = data['get_data_sensor'].get("unicast")
+            now = datetime.now()
+            time = now.strftime("%H:%M:%S")
+            insert_data = DataSensor(id_sensor=name_sensor, type_sensor=data["get_data_sensor"]["type_sensor"],
+                                     type_device=data["get_data_sensor"]["type_device"], value=data['get_data_sensor'].get("value"),
+                                     unit=data["get_data_sensor"]["unit"],
+                                     battery=data["get_data_sensor"]["battery"], create_at=time)
+            db.session.add(insert_data)
+            db.session.commit()
+    except:
+        logging.info("Insert data error")
 
 
 @mqtt.on_connect()

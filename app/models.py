@@ -1,3 +1,5 @@
+import logging
+
 from app import db, app
 from sqlalchemy import Column, Integer, Float, String, ForeignKey, func,DateTime
 from sqlalchemy.orm import relationship, backref
@@ -35,3 +37,9 @@ class DataSensor(db.Model):
 
 with app.app_context():
     db.create_all()
+    try:
+        insert_data = GateWay(name= "123124")
+        db.session.add(insert_data)
+        db.session.commit()
+    except:
+        logging.error("Da co du lieu gateway")
