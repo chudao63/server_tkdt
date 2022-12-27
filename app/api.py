@@ -74,16 +74,17 @@ class ReadDataGatewayByIdSensor(Resource):
             parser.add_argument('id')
             args = parser.parse_args()
             res = []
-            sensor = Sensor.query.get(args['id'])
-            if sensor.active == 1:
-                data_sensors = DataSensor.query.filter(DataSensor.id_sensor == args['id']).order_by(DataSensor.id.desc()).limit(10)
-                for data_sensor in data_sensors:
-                    data_sensor_dict = data_sensor.__dict__
-                    data_sensor_dict.pop("_sa_instance_state")
-                    res.append({"value": data_sensor_dict.get("value"), "time":data_sensor_dict.get("create_at") })
-                return {"data": res}
-            else:
-                return {"data": []}
+            if Sensor.query.get(args['id']):
+                sensor = Sensor.query.get(args['id'])
+                if sensor.active == 1:
+                    data_sensors = DataSensor.query.filter(DataSensor.id_sensor == args['id']).order_by(DataSensor.id.desc()).limit(10)
+                    for data_sensor in data_sensors:
+                        data_sensor_dict = data_sensor.__dict__
+                        data_sensor_dict.pop("_sa_instance_state")
+                        res.append({"value": data_sensor_dict.get("value"), "time":data_sensor_dict.get("create_at") })
+                    return {"data": res}
+                else:
+                    return {"data": []}
         except:
             logging.info("Loi query data")
 
