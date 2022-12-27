@@ -84,7 +84,7 @@ def handle_mqtt_message(client, userdata, message):
     #             emit('scan_gateway', "không tìm thấy gateway mới", broadcast=True, namespace='/')
 
     if "get_data_sensor" in payload:
-        unitcast = payload.get("get_data_sensor").get("unitcast")
+        unitcast = payload.get("get_data_sensor").get("unicast")
         insert_data_sensor(payload)
         mqtt.publish("/confirm_scan",payload=json.dumps({"data_setting": {"unicast": unitcast, "delete": 0, "time": 10}}))
 
